@@ -85,6 +85,7 @@ jobs:
       - uses: actions/checkout@main
         with:
             submodules: recursive
+      - run: sudo sed -i '/bullseye-backports/d' /etc/apt/sources.list
       - run: apt update && apt install -y curl
       - name: perl -V
         run: perl -V
