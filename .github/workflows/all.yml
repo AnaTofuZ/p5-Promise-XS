@@ -27,7 +27,7 @@ jobs:
       - name: perl -V
         run: perl -V
       - name: Install Dependencies
-        run: cpanm --notest --installdeps --with-configure --with-develop --verbose .
+        run: curl -fsSL https://raw.githubusercontent.com/skaji/cpm/main/cpm | perl - install -g --verbose --notest --with-configure --with-develop
       - name: perl Makefile.PL
         run: perl Makefile.PL
       - name: make
@@ -67,7 +67,7 @@ jobs:
       - name: perl -V
         run: perl -V
       - name: Install Dependencies
-        run: cpanm --notest --installdeps --with-configure --with-develop --verbose .
+        run: curl -fsSL https://raw.githubusercontent.com/skaji/cpm/main/cpm | perl - install -g --verbose --notest --with-configure --with-develop
       - name: perl Makefile.PL
         run: perl Makefile.PL
       - name: make
@@ -79,7 +79,7 @@ jobs:
     runs-on: ubuntu-latest
 
     container:
-      image: simcop2387/perl-tester:5.036.000-main-debugging-quadmath-buster
+      image: simcop2387/perl-tester:5.036.000-main-debugging-quadmath-bullseye
 
     steps:
       - uses: actions/checkout@main
@@ -89,7 +89,7 @@ jobs:
       - name: perl -V
         run: perl -V
       - name: Install Dependencies
-        run: curl https://cpanmin.us | perl - --notest --installdeps --with-configure --with-develop --verbose .
+        run: curl -fsSL https://raw.githubusercontent.com/skaji/cpm/main/cpm | perl - install -g App::cpm 
       - name: perl Makefile.PL
         run: perl Makefile.PL
       - name: make
@@ -105,11 +105,10 @@ jobs:
         with:
             submodules: recursive
       - name: Set up Perl
-        run: brew install cpanminus
       - name: perl -V
         run: perl -V
       - name: Install Dependencies
-        run: cpanm --verbose --notest --installdeps --with-develop --with-configure .
+        run: curl -fsSL https://raw.githubusercontent.com/skaji/cpm/main/cpm | perl - install -g App::cpm 
       - name: perl Makefile.PL
         run: perl Makefile.PL
       - name: make
@@ -118,7 +117,7 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          curl -L https://cpanmin.us | perl - --notest Devel::Cover::Report::Coveralls
+          curl -fsSL https://raw.githubusercontent.com/skaji/cpm/main/cpm | perl - install -g --notest Devel::Cover::Report::Coveralls
           `perl -MConfig -E'print $Config::Config{"sitebin"}'`/cover -test -report Coveralls -ignore_re easyxs
 
   windows:
@@ -138,7 +137,7 @@ jobs:
       - name: perl -V
         run: perl -V
       - name: Install Dependencies
-        run: curl -L https://cpanmin.us | perl - --notest --installdeps --with-develop --with-configure --verbose .
+        run: curl -fsSL https://raw.githubusercontent.com/skaji/cpm/main/cpm | perl - install -g App::cpm
       - name: perl Makefile.PL
         run: perl Makefile.PL
       - name: make
@@ -223,7 +222,7 @@ jobs:
           shell: bash
           run: |
             sudo ${{ matrix.os.pkginstall }}
-            curl -L https://cpanmin.us | sudo perl - --verbose --notest --installdeps --with-configure --with-develop .
+            curl -fsSL https://raw.githubusercontent.com/skaji/cpm/main/cpm | sudo perl - install -g --with-configure --with-develop
             perl Makefile.PL
             make
             prove -wlvmb t
