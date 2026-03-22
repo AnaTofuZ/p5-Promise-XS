@@ -25,7 +25,7 @@ jobs:
         with:
             submodules: recursive
       - name: perl -V
-        run: perl -V && where perl
+        run: perl -V
       - name: Install Dependencies
         run: cpm install -g --verbose --notest --with-all
       - name: perl Makefile.PL
