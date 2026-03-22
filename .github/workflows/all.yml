@@ -104,7 +104,6 @@ jobs:
       - uses: actions/checkout@main
         with:
             submodules: recursive
-      - name: Set up Perl
       - name: perl -V
         run: perl -V
       - name: Install Dependencies
