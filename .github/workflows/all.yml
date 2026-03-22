@@ -85,9 +85,8 @@ jobs:
       - uses: actions/checkout@main
         with:
             submodules: recursive
-      - run: deb http://archive.debian.org/debian bullseye-backports main && \
-             echo 'Acquire::Check-Valid-Until "false";' | sudo tee /etc/apt/apt.conf.d/99no-check-valid && \
-             apt update && apt install -y curl
+      - run: sed -i '/bullseye-backports/d' /etc/apt/sources.list && \
+            apt update &&  apt install -y curl
       - name: perl -V
         run: perl -V
       - name: Install Dependencies
