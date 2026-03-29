@@ -88,6 +88,8 @@ jobs:
       - name: perl -V
         run: perl -V
       - name: Install Configure Dependencies
+        run: curl -fsSL https://raw.githubusercontent.com/skaji/cpm/main/cpm | perl - install -g App::cpm 
+      - name: Install Configure Dependencies
         run: cpm install -g --notest ExtUtils::MakeMaker::CPANfile
       - name: Install Dependencies
         run: cpm install -g --with-configure --with-develop
