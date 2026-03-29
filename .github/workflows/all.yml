@@ -78,6 +78,9 @@ jobs:
   linux-debug:
     runs-on: ubuntu-latest
 
+    env:
+      PERL_USE_UNSAFE_INC: 1
+
     container:
       image: simcop2387/perl-tester:5.036.000-main-debugging-quadmath-bullseye
 
@@ -88,11 +91,11 @@ jobs:
       - name: perlcpanm  -V
         run: perl -V
       - name: Install Configure Dependencies
-        run: cpm install -v -g ExtUtils::MakeMaker::CPANfile
+        run: cpm install -v ExtUtils::MakeMaker::CPANfile
       - name: Install Dependencies
-        run: cpm install -v -g --with-configure --with-develop
-      - name: perl5.36.0 Makefile.PL
-        run: perl5.36.0 Makefile.PL
+        run: cpm install -v --with-configure --with-develop
+      - name: perl Makefile.PL
+        run: perl Makefile.PL
       - name: make
         run: make
       - name: Run Tests
