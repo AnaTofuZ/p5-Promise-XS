@@ -85,16 +85,14 @@ jobs:
       - uses: actions/checkout@main
         with:
             submodules: recursive
-      - name: perl -V
+      - name: perlcpanm  -V
         run: perl -V
       - name: Install Configure Dependencies
-        run: curl -fsSL https://raw.githubusercontent.com/skaji/cpm/main/cpm | perl - install -g App::cpm 
-      - name: Install Configure Dependencies
-        run: cpanm ExtUtils::MakeMaker::CPANfile
+        run: cpm install -g ExtUtils::MakeMaker::CPANfile
       - name: Install Dependencies
         run: cpm install -g --with-configure --with-develop
-      - name: perl Makefile.PL
-        run: perl Makefile.PL
+      - name: perl5.36.0 Makefile.PL
+        run: perl5.36.0 Makefile.PL
       - name: make
         run: make
       - name: Run Tests
