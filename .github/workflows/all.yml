@@ -87,16 +87,10 @@ jobs:
             submodules: recursive
       - name: perlcpanm  -V
         run: perl -V
-      - name: Install Configure Dependencies
-        run: cpm install -v ExtUtils::MakeMaker::CPANfile
       - name: Install Dependencies
-        run: cpm install -v --with-configure --with-develop
-      - name: Install Configure Dependencies
-        run: cpm install -v Carton
-      - name: Install Configure Dependencies
-        run: carton install
+        run:  cpanm --notest --installdeps .
       - name: perl Makefile.PL
-        run: carton exec -- perl Makefile.PL
+        run: perl Makefile.PL
       - name: make
         run: make
       - name: Run Tests
