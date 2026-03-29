@@ -95,6 +95,10 @@ jobs:
         run: cpanm -L "$GITHUB_WORKSPACE/local" --notest ExtUtils::MakeMaker::CPANfile
       - name: Install Dependencies
         run: cpanm -L "$GITHUB_WORKSPACE/local" --notest --installdeps --with-configure --with-develop .
+      - name: Debug Perl library paths
+        run: |
+          perl -e 'print "$_\n" for @INC'
+          perl -MExtUtils::MakeMaker::CPANfile -e 'print "$INC{q{ExtUtils/MakeMaker/CPANfile.pm}}\n"'
       - name: perl Makefile.PL
         run: perl Makefile.PL
       - name: make
