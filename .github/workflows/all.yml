@@ -88,9 +88,9 @@ jobs:
       - name: perlcpanm  -V
         run: perl -V
       - name: Install Configure Dependencies
-        run: cpm install -g ExtUtils::MakeMaker::CPANfile
+        run: cpm install -v -g ExtUtils::MakeMaker::CPANfile
       - name: Install Dependencies
-        run: cpm install -g --with-configure --with-develop
+        run: cpm install -v -g --with-configure --with-develop
       - name: perl5.36.0 Makefile.PL
         run: perl5.36.0 Makefile.PL
       - name: make
