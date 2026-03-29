@@ -27,7 +27,7 @@ jobs:
       - name: perl -V
         run: perl -V
       - name: Install Dependencies
-        run: cpanm --notest --installdeps --with-configure --with-develop --verbose .
+        run: cpm install -g --verbose --notest --with-all
       - name: perl Makefile.PL
         run: perl Makefile.PL
       - name: make
@@ -42,6 +42,9 @@ jobs:
       fail-fast: false
       matrix:
         perl-version:
+          - '5.42'
+          - '5.40'
+          - '5.38'
           - '5.36'
           - '5.34'
           - '5.32'
@@ -54,8 +57,6 @@ jobs:
           - '5.18'
           - '5.16'
           - '5.14'
-          - '5.12'
-          - '5.10'
 
     container:
       image: perldocker/perl-tester:${{ matrix.perl-version }}
@@ -67,7 +68,7 @@ jobs:
       - name: perl -V
         run: perl -V
       - name: Install Dependencies
-        run: cpanm --notest --installdeps --with-configure --with-develop --verbose .
+        run: cpm install -g --verbose --notest --with-configure --with-develop
       - name: perl Makefile.PL
         run: perl Makefile.PL
       - name: make
@@ -79,17 +80,26 @@ jobs:
     runs-on: ubuntu-latest
 
     container:
-      image: simcop2387/perl-tester:5.036.000-main-debugging-quadmath-buster
+      image: simcop2387/perl-tester:5.036.000-main-debugging-quadmath-bullseye
 
     steps:
       - uses: actions/checkout@main
         with:
             submodules: recursive
-      - run: apt update && apt install -y curl
       - name: perl -V
         run: perl -V
+      - name: Set local Perl library paths
+        run: |
+          perl -MConfig -e 'print "PERL_MM_OPT=INSTALL_BASE=$ENV{GITHUB_WORKSPACE}/local\nPERL_MB_OPT=--install_base $ENV{GITHUB_WORKSPACE}/local\nPERL5LIB=$ENV{GITHUB_WORKSPACE}/local/lib/perl5:$ENV{GITHUB_WORKSPACE}/local/lib/perl5/$Config{archname}\n"' >> "$GITHUB_ENV"
+          echo "$GITHUB_WORKSPACE/local/bin" >> "$GITHUB_PATH"
+      - name: Install Configure Dependencies
+        run: cpanm -L "$GITHUB_WORKSPACE/local" --notest ExtUtils::MakeMaker::CPANfile
       - name: Install Dependencies
-        run: curl https://cpanmin.us | perl - --notest --installdeps --with-configure --with-develop --verbose .
+        run: cpanm -L "$GITHUB_WORKSPACE/local" --notest --installdeps --with-configure --with-develop .
+      - name: Debug Perl library paths
+        run: |
+          perl -e 'print "$_\n" for @INC'
+          perl -MExtUtils::MakeMaker::CPANfile -e 'print "$INC{q{ExtUtils/MakeMaker/CPANfile.pm}}\n"'
       - name: perl Makefile.PL
         run: perl Makefile.PL
       - name: make
@@ -104,12 +114,10 @@ jobs:
       - uses: actions/checkout@main
         with:
             submodules: recursive
-      - name: Set up Perl
-        run: brew install cpanminus
       - name: perl -V
         run: perl -V
-      - name: Install Dependencies
-        run: cpanm --verbose --notest --installdeps --with-develop --with-configure .
+      - name: Install Dependencies 
+        run: curl -fsSL https://raw.githubusercontent.com/skaji/cpm/main/cpm | sudo perl - install -g --with-configure --with-develop
       - name: perl Makefile.PL
         run: perl Makefile.PL
       - name: make
@@ -118,7 +126,7 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          curl -L https://cpanmin.us | perl - --notest Devel::Cover::Report::Coveralls
+          curl -fsSL https://raw.githubusercontent.com/skaji/cpm/main/cpm | sudo perl - install -g --notest Devel::Cover::Report::Coveralls
           `perl -MConfig -E'print $Config::Config{"sitebin"}'`/cover -test -report Coveralls -ignore_re easyxs
 
   windows:
@@ -138,7 +146,7 @@ jobs:
       - name: perl -V
         run: perl -V
       - name: Install Dependencies
-        run: curl -L https://cpanmin.us | perl - --notest --installdeps --with-develop --with-configure --verbose .
+        run: curl -fsSL https://raw.githubusercontent.com/skaji/cpm/main/cpm | perl - install -g --with-configure --with-develop
       - name: perl Makefile.PL
         run: perl Makefile.PL
       - name: make
@@ -151,21 +159,26 @@ jobs:
 
     steps:
       - name: Set up Cygwin
-        uses: cygwin/cygwin-install-action@master
+        uses: egor-tensin/setup-cygwin@master
         with:
-            packages: perl_base perl-ExtUtils-MakeMaker make gcc-g++ libcrypt-devel libnsl-devel bash
+            packages: perl perl-ExtUtils-MakeMaker make gcc-g++ libcrypt-devel libnsl-devel bash
       - uses: actions/checkout@main
         with:
             submodules: recursive
-      - shell: C:\cygwin\bin\bash.exe --login --norc -eo pipefail -o igncr '{0}'
-        run: |
-            perl -V
-            cpan -T App::cpanminus
-            cd $GITHUB_WORKSPACE
-            cpanm --verbose --notest --installdeps --with-configure --with-develop .
-            perl Makefile.PL
-            make
-            prove -wlvmb t
+      - run: perl -V
+        shell: C:\tools\cygwin\bin\bash.exe --login --norc -eo pipefail -o igncr '{0}'
+      - run: cpan App::cpanminus
+        shell: C:\tools\cygwin\bin\bash.exe --login --norc -eo pipefail -o igncr '{0}'
+      - name: Install Dependencies
+        run: cd $GITHUB_WORKSPACE; cpanm --verbose --notest --installdeps --with-configure --with-recommends .
+        shell: C:\tools\cygwin\bin\bash.exe --login --norc -eo pipefail -o igncr '{0}'
+      - name: perl Makefile.PL
+        run: cd $GITHUB_WORKSPACE; perl Makefile.PL
+        shell: C:\tools\cygwin\bin\bash.exe --login --norc -eo pipefail -o igncr '{0}'
+      - name: make test
+        run: cd $GITHUB_WORKSPACE; make test
+        shell: C:\tools\cygwin\bin\bash.exe --login --norc -eo pipefail -o igncr '{0}'
+
 
   qemu-alpine:
     runs-on: ubuntu-latest
@@ -173,12 +186,17 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        platform:
-          - i386
-          - arm32v6
-          - arm32v7
-          - arm64v8
-          - s390x
+        include:
+          - platform: i386
+            docker_platform: linux/386
+          - platform: arm32v6
+            docker_platform: linux/arm/v6
+          - platform: arm32v7
+            docker_platform: linux/arm/v7
+          - platform: arm64v8
+            docker_platform: linux/arm64
+          - platform: s390x
+            docker_platform: linux/s390x
 
     steps:
       - uses: actions/checkout@main
@@ -187,7 +205,7 @@ jobs:
       - name: Get the qemu container
         run: docker run --rm --privileged multiarch/qemu-user-static --reset -p yes
       - name: Run tests on ${{ matrix.platform }}
-        run: docker run --rm --interactive --mount type=bind,source=$(pwd),target=/host ${{ matrix.platform }}/alpine sh -c "apk add wget perl-app-cpanminus perl-dev make gcc libc-dev; cd /host; perl -V; cpanm --verbose --notest --installdeps --with-configure --with-develop .; perl Makefile.PL; make -j3 -j3; PERL_DL_NONLAZY=1 prove -wlvmb t"
+        run: docker run --rm --interactive --platform ${{ matrix.docker_platform }} --mount type=bind,source=$(pwd),target=/host ${{ matrix.platform }}/alpine sh -c "apk add wget perl-app-cpanminus perl-dev make gcc libc-dev; cd /host; perl -V; cpanm --verbose --notest --installdeps --with-configure --with-develop .; perl Makefile.PL; make -j3 -j3; PERL_DL_NONLAZY=1 prove -wlvmb t"
 
   BSDs:
     runs-on: macos-10.15
@@ -223,7 +241,7 @@ jobs:
           shell: bash
           run: |
             sudo ${{ matrix.os.pkginstall }}
-            curl -L https://cpanmin.us | sudo perl - --verbose --notest --installdeps --with-configure --with-develop .
+            curl -fsSL https://raw.githubusercontent.com/skaji/cpm/main/cpm | sudo perl - install -g --with-configure --with-develop
             perl Makefile.PL
             make
             prove -wlvmb t
