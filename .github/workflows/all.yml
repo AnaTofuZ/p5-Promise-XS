@@ -42,6 +42,7 @@ jobs:
       fail-fast: false
       matrix:
         perl-version:
+          - '5.42'
           - '5.40'
           - '5.38'
           - '5.36'
@@ -85,7 +86,7 @@ jobs:
       - uses: actions/checkout@main
         with:
             submodules: recursive
-      - name: perlcpanm  -V
+      - name: perl -V
         run: perl -V
       - name: Set local Perl library paths
         run: |
