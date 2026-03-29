@@ -87,8 +87,14 @@ jobs:
             submodules: recursive
       - name: perlcpanm  -V
         run: perl -V
+      - name: Set local Perl library paths
+        run: |
+          perl -MConfig -e 'print "PERL_MM_OPT=INSTALL_BASE=$ENV{GITHUB_WORKSPACE}/local\nPERL_MB_OPT=--install_base $ENV{GITHUB_WORKSPACE}/local\nPERL5LIB=$ENV{GITHUB_WORKSPACE}/local/lib/perl5:$ENV{GITHUB_WORKSPACE}/local/lib/perl5/$Config{archname}\n"' >> "$GITHUB_ENV"
+          echo "$GITHUB_WORKSPACE/local/bin" >> "$GITHUB_PATH"
+      - name: Install Configure Dependencies
+        run: cpanm -L "$GITHUB_WORKSPACE/local" --notest ExtUtils::MakeMaker::CPANfile
       - name: Install Dependencies
-        run: cpanm --notest --installdeps --with-configure --with-develop .
+        run: cpanm -L "$GITHUB_WORKSPACE/local" --notest --installdeps --with-configure --with-develop .
       - name: perl Makefile.PL
         run: perl Makefile.PL
       - name: make
