@@ -110,7 +110,7 @@ jobs:
       - name: perl -V
         run: perl -V
       - name: Install Dependencies 
-        run: curl -fsSL https://raw.githubusercontent.com/skaji/cpm/main/cpm | sudo perl - install -g --with-configure --with-develop
+        run: curl -fsSL https://raw.githubusercontent.com/skaji/cpm/main/cpm | sudo perl - install -g --with-configure --with-develop --with-recommends
       - name: perl Makefile.PL
         run: perl Makefile.PL
       - name: make
@@ -226,7 +226,7 @@ jobs:
           shell: bash
           run: |
             sudo ${{ matrix.os.pkginstall }}
-            curl -fsSL https://raw.githubusercontent.com/skaji/cpm/main/cpm | sudo perl - install -g --with-configure --with-develop
+            curl -fsSL https://raw.githubusercontent.com/skaji/cpm/main/cpm | sudo perl - install -g --with-configure --with-develop --with-recommends
             perl Makefile.PL
             make
             prove -wlvmb t
