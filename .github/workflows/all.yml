@@ -80,7 +80,8 @@ jobs:
 
   linux-debug:
     runs-on: ubuntu-latest
-
+    env:
+       PERL5LIB: $ENV{GITHUB_WORKSPACE}/local/lib/perl5:$ENV{GITHUB_WORKSPACE}/local/lib/perl5/$Config{archname}
     container:
       image: simcop2387/perl-tester:5.036.000-main-debugging-quadmath-bullseye
 
@@ -90,10 +91,6 @@ jobs:
             submodules: recursive
       - name: perl -V
         run: perl -V
-      - name: Set local Perl library paths
-        run: |
-          perl -MConfig -e 'print "PERL5LIB=$ENV{GITHUB_WORKSPACE}/local/lib/perl5:$ENV{GITHUB_WORKSPACE}/local/lib/perl5/$Config{archname}\n"' >> "$GITHUB_ENV"
-          echo "$GITHUB_WORKSPACE/local/bin" >> "$GITHUB_PATH"
       - name: Install Configure Dependencies
         run: cpanm -L "$GITHUB_WORKSPACE/local" --notest ExtUtils::MakeMaker::CPANfile
       - name: Install Dependencies
