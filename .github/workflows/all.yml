@@ -154,13 +154,13 @@ jobs:
       - name: Set up Cygwin
         uses: egor-tensin/setup-cygwin@master
         with:
-            packages: perl perl-ExtUtils-MakeMaker make gcc-g++ libcrypt-devel libnsl-devel bash
+            packages: perl perl-ExtUtils-MakeMaker make gcc-g++ libcrypt-devel libnsl-devel bash curl
       - uses: actions/checkout@main
         with:
             submodules: recursive
       - shell: C:\tools\cygwin\bin\bash.exe --login --norc -eo pipefail -o igncr '{0}'
         run: |
-           cpan App::cpm
+           curl -fsSL https://raw.githubusercontent.com/skaji/cpm/main/cpm | perl - install -g --with-configure --with-develop 
            cd $GITHUB_WORKSPACE; cpm install --verbose --notest --with-configure --with-recommends
            perl Makefile.PL
            make test
