@@ -92,7 +92,7 @@ jobs:
       - name: perl -V
         run: perl -V
       - name: Install Dependencies
-        run: cpm install -L "$GITHUB_WORKSPACE/local" --notest  --with-configure --with-develop -v .
+        run: cpm install -L "$GITHUB_WORKSPACE/local" --notest  --with-configure --with-develop -v --show-build-log-on-failure
       - name: perl Makefile.PL
         run: perl Makefile.PL
       - name: make
