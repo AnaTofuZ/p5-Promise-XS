@@ -81,7 +81,7 @@ jobs:
   linux-debug:
     runs-on: ubuntu-latest
     env:
-       PERL5LIB: $ENV{GITHUB_WORKSPACE}/local/lib/perl5:$ENV{GITHUB_WORKSPACE}/local/lib/perl5/$Config{archname}
+       PERL5LIB: ${{ github.workspace }}/local/lib/perl5
     container:
       image: simcop2387/perl-tester:5.036.000-main-debugging-quadmath-bullseye
 
