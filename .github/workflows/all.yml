@@ -194,24 +194,17 @@ jobs:
         run: docker run --rm --interactive --platform ${{ matrix.docker_platform }} --mount type=bind,source=$(pwd),target=/host ${{ matrix.platform }}/alpine sh -c "apk add wget perl-app-cpanminus perl-dev make gcc libc-dev; cd /host; perl -V; cpanm --verbose --notest --installdeps --with-configure --with-develop .; perl Makefile.PL; make -j3 -j3; PERL_DL_NONLAZY=1 prove -wlvmb t"
 
   BSDs:
-    runs-on: macos-10.15
+    runs-on: ubuntu-latest
 
     strategy:
       fail-fast: false
       matrix:
         os:
           - name: freebsd
-            version: '13.1'
+            version: '15.0'
             pkginstall: pkg install -y git p5-ExtUtils-MakeMaker
-        # Breaking due to some weird linker error ...
-        #  - name: freebsd
-        #    version: '12.2'
-        #    pkginstall: pkg install -y git cmake p5-ExtUtils-MakeMaker
           - name: openbsd
-            version: '7.2'
-            pkginstall: pkg_add git curl p5-ExtUtils-MakeMaker
-          - name: openbsd
-            version: '6.9'
+            version: '7.8'
             pkginstall: pkg_add git curl p5-ExtUtils-MakeMaker
 
     steps:
